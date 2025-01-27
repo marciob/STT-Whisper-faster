@@ -1,0 +1,4 @@
+fast, but not accurate
+
+speed: 2-3s
+accuracy: 40%
