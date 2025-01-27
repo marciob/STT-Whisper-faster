@@ -45,8 +45,7 @@ def record_audio():
                    input_device_index=0,  # Explicitly use MacBook Pro Microphone
                    frames_per_buffer=CHUNK)
     
-    print("\n* Recording started...")
-    print("* Press Ctrl+C to stop recording")
+    print("* Recording started... (Press Ctrl+C to stop)")
     
     audio_buffer = []
     buffer_timestamps = []
@@ -55,8 +54,6 @@ def record_audio():
         try:
             current_time = time.time()
             data = stream.read(CHUNK, exception_on_overflow=False)
-            audio_data = np.frombuffer(data, dtype=np.float32)
-            level = np.abs(audio_data).mean()
             
             # Add to buffer
             audio_buffer.append(data)
@@ -64,16 +61,12 @@ def record_audio():
             
             # When buffer reaches window size, add to queue
             if len(audio_buffer) >= int(RATE * WINDOW_SIZE / CHUNK):
-                print(f"\nSending chunk to process queue (level: {level:.4f})")
                 audio_queue.put((audio_buffer.copy(), buffer_timestamps.copy()))
                 
                 # Keep overlap
                 overlap_chunks = int(RATE * OVERLAP / CHUNK)
                 audio_buffer = audio_buffer[-overlap_chunks:]
                 buffer_timestamps = buffer_timestamps[-overlap_chunks:]
-            
-            if level > 0.001:
-                print(f"Audio level: {level:.4f}")
             
         except Exception as e:
             print(f"Error recording: {e}")
@@ -86,8 +79,6 @@ def record_audio():
 
 def process_audio():
     """Process audio chunks and transcribe"""
-    chunks_processed = 0
-    
     while is_recording:
         if not audio_queue.empty():
             try:
@@ -96,12 +87,6 @@ def process_audio():
                 # Convert audio data to numpy array
                 audio_array = np.frombuffer(b''.join(audio_data), dtype=np.float32)
                 
-                # Debug: Print audio statistics
-                chunks_processed += 1
-                print(f"\nProcessing chunk {chunks_processed}")
-                print(f"Audio array shape: {audio_array.shape}")
-                print(f"Audio mean level: {np.abs(audio_array).mean():.4f}")
-                
                 # Normalize audio
                 audio_array = audio_array / np.max(np.abs(audio_array)) if np.max(np.abs(audio_array)) > 0 else audio_array
                 
@@ -109,7 +94,7 @@ def process_audio():
                     audio_array,
                     vad_filter=True,
                     vad_parameters=dict(
-                        min_silence_duration_ms=300,  # Reduced silence duration
+                        min_silence_duration_ms=300,
                         speech_pad_ms=100
                     )
                 )
@@ -117,20 +102,12 @@ def process_audio():
                 current_time = time.time()
                 processing_delay = current_time - timestamps[0]
                 
-                segment_found = False
                 for segment in segments:
                     if segment.text.strip():
-                        segment_found = True
-                        print(f"\n[{datetime.now().strftime('%H:%M:%S')}] "
-                              f"{segment.text} (processed in {processing_delay:.2f}s)")
-                
-                if not segment_found:
-                    print("\nNo speech detected in this chunk")
+                        print(f"[{datetime.now().strftime('%H:%M:%S')}] {segment.text} (processed in {processing_delay:.2f}s)")
                 
             except Exception as e:
                 print(f"Error processing: {e}")
-                import traceback
-                traceback.print_exc()
         
         time.sleep(0.05)
 
