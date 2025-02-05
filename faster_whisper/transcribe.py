@@ -388,9 +388,9 @@ class BatchedInferencePipeline:
             audio = decode_audio(audio, sampling_rate=sampling_rate)
         duration = audio.shape[0] / sampling_rate
 
-        self.model.logger.info(
-            "Processing audio with duration %s", format_timestamp(duration)
-        )
+        # self.model.logger.info(
+        #     "Processing audio with duration %s", format_timestamp(duration)
+        # )
 
         chunk_length = chunk_length or self.model.feature_extractor.chunk_length
         # if no segment split is provided, use vad_model and generate segments
@@ -425,10 +425,10 @@ class BatchedInferencePipeline:
             / sampling_rate
         )
 
-        self.model.logger.info(
-            "VAD filter removed %s of audio",
-            format_timestamp(duration - duration_after_vad),
-        )
+        # self.model.logger.info(
+        #     "VAD filter removed %s of audio",
+        #     format_timestamp(duration - duration_after_vad),
+        # )
 
         audio_chunks, chunks_metadata = collect_chunks(audio, clip_timestamps)
         features = (
@@ -460,11 +460,11 @@ class BatchedInferencePipeline:
                     language_detection_threshold=language_detection_threshold,
                 )
 
-                self.model.logger.info(
-                    "Detected language '%s' with probability %.2f",
-                    language,
-                    language_probability,
-                )
+                # self.model.logger.info(
+                #     "Detected language '%s' with probability %.2f",
+                #     language,
+                #     language_probability,
+                # )
         else:
             if not self.model.model.is_multilingual and language != "en":
                 self.model.logger.warning(
@@ -836,9 +836,9 @@ class WhisperModel:
         duration = audio.shape[0] / sampling_rate
         duration_after_vad = duration
 
-        self.logger.info(
-            "Processing audio with duration %s", format_timestamp(duration)
-        )
+        # self.logger.info(
+        #     "Processing audio with duration %s", format_timestamp(duration)
+        # )
 
         if vad_filter and clip_timestamps == "0":
             if vad_parameters is None:
@@ -850,22 +850,22 @@ class WhisperModel:
             audio = np.concatenate(audio_chunks, axis=0)
             duration_after_vad = audio.shape[0] / sampling_rate
 
-            self.logger.info(
-                "VAD filter removed %s of audio",
-                format_timestamp(duration - duration_after_vad),
-            )
+            # self.logger.info(
+            #     "VAD filter removed %s of audio",
+            #     format_timestamp(duration - duration_after_vad),
+            # )
 
             if self.logger.isEnabledFor(logging.DEBUG):
                 self.logger.debug(
-                    "VAD filter kept the following audio segments: %s",
-                    ", ".join(
-                        "[%s -> %s]"
-                        % (
-                            format_timestamp(chunk["start"] / sampling_rate),
-                            format_timestamp(chunk["end"] / sampling_rate),
-                        )
-                        for chunk in speech_chunks
-                    ),
+                    # "VAD filter kept the following audio segments: %s",
+                    # ", ".join(
+                    #     "[%s -> %s]"
+                    #     % (
+                    #         format_timestamp(chunk["start"] / sampling_rate),
+                    #         format_timestamp(chunk["end"] / sampling_rate),
+                    #     )
+                    #     for chunk in speech_chunks
+                    # ),
                 )
 
         else:
@@ -903,11 +903,11 @@ class WhisperModel:
                     language_detection_threshold=language_detection_threshold,
                 )
 
-                self.logger.info(
-                    "Detected language '%s' with probability %.2f",
-                    language,
-                    language_probability,
-                )
+                # self.logger.info(
+                #     "Detected language '%s' with probability %.2f",
+                #     language,
+                #     language_probability,
+                # )
         else:
             if not self.model.is_multilingual and language != "en":
                 self.logger.warning(

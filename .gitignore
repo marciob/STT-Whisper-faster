@@ -6,17 +6,7 @@ __pycache__/
 
 # Distribution / Packaging
 venv/
-
-# Unit Test
-.pytest_cache/
-
-# Ignore IDE, Editor Files
-.idea/
-.vscode/
-
-
-# Python virtual environments
-venv/
+env/
 whisper-env/
 whisper-env-310/
 *.venv
@@ -46,12 +36,16 @@ htmlcov/
 *.swo
 .DS_Store
 
-# Project specific
+# Project specific audio files
 *.wav
 *.mp3
 *.ogg
 *.flac
 *.m4a
+benchmark/benchmark.m4a
+docker/jfk.flac
+
+# Model files
 model.bin
 *.pt
 *.ckpt
@@ -70,3 +64,7 @@ model.bin
 
 # Local development
 local_settings.py
+
+# Project specific folders
+__pycache__/
+faster_whisper/__pycache__/

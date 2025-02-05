@@ -4,3 +4,10 @@ tokenizers>=0.13,<1
 onnxruntime>=1.14,<2 
 av>=11
 tqdm
+python-Levenshtein>=0.21.0
+pyaudio
+pyannote.audio
+python-dotenv
+numpy
+faster-whisper
+torch
